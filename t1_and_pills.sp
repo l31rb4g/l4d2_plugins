@@ -1,12 +1,12 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.0.2"
 
 static int givenPills = 0;
 
 public Plugin:myinfo = {
-    name = "T1 and pills",
+    name = "T1 and Pills",
     author = "Tripa Seca",
     version = PLUGIN_VERSION
 }
@@ -32,14 +32,15 @@ public onRoundStart(Handle:ev, const String:name[], bool:dontBroadcast) {
     CreateTimer(1.0, ReplaceWeapons);
     CreateTimer(15.0, GivePills);
     CreateTimer(30.0, GivePills);
+    CreateTimer(60.0, GivePills);
 
 }
 
 public Action:PillsCommand(client, args){
-    if (GetUserAdmin(client) != INVALID_ADMIN_ID) {
+    //if (GetUserAdmin(client) != INVALID_ADMIN_ID) {
         CreateTimer(1.0, GivePills);
-    }
-    return Plugin_Stop;
+    //}
+    return Plugin_Handled;
 }
 
 
