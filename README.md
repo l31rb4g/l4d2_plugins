@@ -1,5 +1,5 @@
 # l4d2_plugins
-Left 4 Dead 2 plugins by Tripa Seca
+Left 4 Dead 2 plugins by Tripa Seca.
 
 ## Requirements
 - SourceMod - https://www.sourcemod.net
@@ -8,5 +8,5 @@ Left 4 Dead 2 plugins by Tripa Seca
 - Run `scripts/environment.sh`
 
 ### Compiling
-- Run `scripts/compile.sh script_name.sp`
+- Run `scripts/compile.sh <script_name.sp>`
 
