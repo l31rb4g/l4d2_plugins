@@ -15,11 +15,16 @@ public Plugin:myinfo = {
 // Native events
 public OnPluginStart() {
 
-    // Listeners
-    HookEvent("round_start", onRoundStart);
+    new String:strGameMode[20];
+    GetConVarString(FindConVar("mp_gamemode"), strGameMode, sizeof(strGameMode));
+    
+    if (StrEqual(strGameMode, "versus")){
+        // Listeners
+        HookEvent("round_start", onRoundStart);
 
-    // Commands
-    RegConsoleCmd("pills", PillsCommand);
+        // Commands
+        RegConsoleCmd("pills", PillsCommand);
+    }
 
 }
 
@@ -37,9 +42,9 @@ public onRoundStart(Handle:ev, const String:name[], bool:dontBroadcast) {
 }
 
 public Action:PillsCommand(client, args){
-    //if (GetUserAdmin(client) != INVALID_ADMIN_ID) {
+    if (GetUserAdmin(client) != INVALID_ADMIN_ID) {
         CreateTimer(1.0, GivePills);
-    //}
+    }
     return Plugin_Handled;
 }
 
