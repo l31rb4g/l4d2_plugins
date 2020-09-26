@@ -2,7 +2,7 @@
 Left 4 Dead 2 plugins by Tripa Seca.
 
 ## Requirements
-- SourceMod - https://www.sourcemod.net
+- SourceMod 1.10 - https://www.sourcemod.net
 
 ### Environment
 - Run `scripts/environment.sh`

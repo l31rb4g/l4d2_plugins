@@ -4,12 +4,16 @@ current=$(pwd)
 scripting='sourcemod/addons/sourcemod/scripting'
 
 if [ "$1" != "" ]; then
-    cp $1 $scripting
-    cd $scripting
-    ./compile.sh $1
-    rm $1
-    mv compiled/*.smx $current/compiled
-    cd $current
+    if [ -f "$1" ]; then
+        filename=$(basename "$1")
+        cp $1 $scripting
+        cd $scripting
+        ./compile.sh $filename
+        rm $filename
+        mv compiled/*.smx $current/compiled
+    else
+        echo "File not found: $1"
+    fi
 else
     echo "Usage: compile.sh <filename.sp>"
 fi
