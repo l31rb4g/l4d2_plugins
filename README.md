@@ -8,5 +8,5 @@ Left 4 Dead 2 plugins by Tripa Seca.
 - Run `scripts/environment.sh`
 
 ### Compiling
-- Run `scripts/compile.sh <script_name.sp>`
+- Run `scripts/compile.sh plugins/<script_name.sp>`
 
