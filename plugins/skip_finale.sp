@@ -63,11 +63,10 @@ public OnPluginStart() {
         if (round > 0){
             votingEnabled = true;
             CreateTimer(3.0, MapVote);
-            CreateTimer(60.0, MapResult);
+            CreateTimer(45.0, MapResult);
         } else {
-            PrintToChatAll("\x04[!] \x01Último mapa começando!");
+            PrintToConsoleAll("\x04[!] \x01Último mapa começando!");
         }
-        round++;
     }
 }
 
@@ -75,6 +74,8 @@ public OnPluginStart() {
 public Action:onRoundEnd(Handle:event, const String:name[], bool:dontbroadcast) {
     decl String:strGameMode[20];
     GetCurrentMap(currentMap, sizeof(currentMap));
+
+    round++;
 
     GetConVarString(FindConVar("mp_gamemode"), strGameMode, sizeof(strGameMode));
     if (round >= 2 && !roundFinished){
