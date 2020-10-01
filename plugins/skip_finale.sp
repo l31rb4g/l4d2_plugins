@@ -1,7 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define PLUGIN_VERSION "0.0.1"
+#define PLUGIN_VERSION "0.0.5"
 
 public Plugin:myinfo = {
     name = "Skip Finale",
@@ -10,6 +10,7 @@ public Plugin:myinfo = {
 }
 
 static bool votingEnabled = false;
+static bool mapChangeEnabled = false;
 static bool roundFinished = false;
 static int round = 0;
 static int votes[7];
@@ -57,30 +58,47 @@ new String:lastMaps[12][128] = {
 
 // Native events
 public OnPluginStart() {
+    HookEvent("round_start", onRoundStart);
+    HookEvent("round_end", onRoundEnd);
+}
+
+
+public Action:onRoundStart(Handle:event, const String:name[], bool:dontbroadcast) {
+    PrintToServer("=================================");
+    PrintToServer(" round start %d", round);
+    PrintToServer("=================================");
 
     GetCurrentMap(currentMap, sizeof(currentMap));
+
     if (inArray(currentMap, lastMaps, sizeof(lastMaps))){
-        if (round > 0){
+        if (round == 0){
+            PrintToServer("MAP VOTING WILL START");
             votingEnabled = true;
-            CreateTimer(3.0, MapVote);
-            CreateTimer(45.0, MapResult);
-        } else {
-            PrintToConsoleAll("\x04[!] \x01Último mapa começando!");
+            CreateTimer(60.0, MapVote);
+            CreateTimer(90.0, MapResult);
+        }
+        if (round > 0){
+            mapChangeEnabled = true;
         }
     }
 }
 
-
 public Action:onRoundEnd(Handle:event, const String:name[], bool:dontbroadcast) {
+    if (inArray(currentMap, lastMaps, sizeof(lastMaps))){
+        round++;
+    }
+
+    PrintToServer("=================================");
+    PrintToServer(" round end %d", round);
+    PrintToServer("=================================");
+
     decl String:strGameMode[20];
+    GetConVarString(FindConVar("mp_gamemode"), strGameMode, sizeof(strGameMode));
     GetCurrentMap(currentMap, sizeof(currentMap));
 
-    round++;
-
-    GetConVarString(FindConVar("mp_gamemode"), strGameMode, sizeof(strGameMode));
-    if (round >= 2 && !roundFinished){
+    if (mapChangeEnabled && !roundFinished){
         PrintToChatAll("\x04[votação] \x01Próximo mapa: \x03%s\x01.", nextmapName);
-        CreateTimer(13.0, GoToNextMap);
+        CreateTimer(14.0, GoToNextMap);
         roundFinished = true;
     }
 
@@ -219,7 +237,11 @@ public Action:MapResult(Handle:timer){
 }
 
 public Action:GoToNextMap(Handle:timer){
-    ServerCommand("sm_changelevel %s", nextmap);
+    round = 0;
+    votingEnabled = false;
+    mapChangeEnabled = false;
+    roundFinished = false;
+    ServerCommand("changelevel %s", nextmap);
 }
 
 
