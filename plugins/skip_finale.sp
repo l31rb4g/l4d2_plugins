@@ -1,7 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define PLUGIN_VERSION "0.0.5"
+#define PLUGIN_VERSION "0.0.6"
 
 public Plugin:myinfo = {
     name = "Skip Finale",
@@ -10,8 +10,8 @@ public Plugin:myinfo = {
 }
 
 static bool votingEnabled = false;
+static bool matchFinished = false;
 static bool mapChangeEnabled = false;
-static bool roundFinished = false;
 static int round = 0;
 static int votes[7];
 
@@ -71,12 +71,6 @@ public Action:onRoundStart(Handle:event, const String:name[], bool:dontbroadcast
     GetCurrentMap(currentMap, sizeof(currentMap));
 
     if (inArray(currentMap, lastMaps, sizeof(lastMaps))){
-        if (round == 0){
-            PrintToServer("MAP VOTING WILL START");
-            votingEnabled = true;
-            CreateTimer(60.0, MapVote);
-            CreateTimer(90.0, MapResult);
-        }
         if (round > 0){
             mapChangeEnabled = true;
         }
@@ -84,22 +78,24 @@ public Action:onRoundStart(Handle:event, const String:name[], bool:dontbroadcast
 }
 
 public Action:onRoundEnd(Handle:event, const String:name[], bool:dontbroadcast) {
-    if (inArray(currentMap, lastMaps, sizeof(lastMaps))){
-        round++;
-    }
+
+    GetCurrentMap(currentMap, sizeof(currentMap));
 
     PrintToServer("=================================");
     PrintToServer(" round end %d", round);
     PrintToServer("=================================");
 
-    decl String:strGameMode[20];
-    GetConVarString(FindConVar("mp_gamemode"), strGameMode, sizeof(strGameMode));
-    GetCurrentMap(currentMap, sizeof(currentMap));
-
-    if (mapChangeEnabled && !roundFinished){
-        PrintToChatAll("\x04[votação] \x01Próximo mapa: \x03%s\x01.", nextmapName);
+    if (mapChangeEnabled && !matchFinished){
+        votingEnabled = true;
+        CreateTimer(1.0, MapVote);
+        CreateTimer(11.0, MapResult);
         CreateTimer(14.0, GoToNextMap);
-        roundFinished = true;
+        matchFinished = true;
+    }
+    
+    // last chapter
+    if (inArray(currentMap, lastMaps, sizeof(lastMaps))){
+        round++;
     }
 
     CreateTimer(5.0, ShowScore);
@@ -239,8 +235,8 @@ public Action:MapResult(Handle:timer){
 public Action:GoToNextMap(Handle:timer){
     round = 0;
     votingEnabled = false;
+    matchFinished = false;
     mapChangeEnabled = false;
-    roundFinished = false;
     ServerCommand("changelevel %s", nextmap);
 }
 
